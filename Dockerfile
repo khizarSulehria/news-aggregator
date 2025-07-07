@@ -24,4 +24,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # 5. Set working dir
 WORKDIR /var/www
 
+# 6. Copy the entire application
 COPY . /var/www
+
+# 7. Change to src directory and install PHP dependencies
+WORKDIR /var/www/src
+RUN composer install --no-dev --optimize-autoloader
