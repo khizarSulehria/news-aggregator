@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\UserPreferenceController;
-use App\Http\Controllers\Api\AggregatorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,12 +28,6 @@ Route::prefix('articles')->group(function () {
     Route::get('/authors', [ArticleController::class, 'authors']);
     Route::get('/sources', [ArticleController::class, 'sources']);
     Route::get('/{article}', [ArticleController::class, 'show']);
-});
-
-Route::prefix('aggregator')->group(function () {
-    Route::get('/status', [AggregatorController::class, 'status']);
-    Route::post('/aggregate', [AggregatorController::class, 'aggregate']);
-    Route::post('/aggregate/{sourceSlug}', [AggregatorController::class, 'aggregateFromSource']);
 });
 
 // Protected routes (require authentication)

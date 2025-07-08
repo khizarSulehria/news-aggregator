@@ -1,61 +1,87 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><a href="https://news-aggregator.com" target="_blank"><img src="https://news-aggregator.com/logo.svg" width="400" alt="News Aggregator Logo"></a></p>
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+<a href="https://github.com/news-aggregator/actions"><img src="https://github.com/news-aggregator/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/news-aggregator/framework"><img src="https://img.shields.io/packagist/dt/news-aggregator/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/news-aggregator/framework"><img src="https://img.shields.io/packagist/v/news-aggregator/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/news-aggregator/framework"><img src="https://img.shields.io/packagist/l/news-aggregator/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## About News Aggregator
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+News Aggregator is a web application designed to collect and display news articles from various sources in one place. It provides an intuitive interface for users to stay updated on the latest news across multiple categories. Key features include:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Simple, fast article aggregation engine.
+- Powerful filtering and categorization options.
+- Support for multiple news APIs and RSS feeds.
+- Real-time updates and notifications for breaking news.
+- User-friendly interface for browsing and searching articles.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+News Aggregator is accessible, powerful, and provides tools required for a seamless news reading experience.
 
-## Learning Laravel
+## Database Usage
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+News Aggregator uses multiple databases to optimize performance and scalability:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **MongoDB**: All news articles are stored in MongoDB. This NoSQL database is chosen for its flexibility in handling unstructured and semi-structured data, which is ideal for aggregating articles from diverse sources with varying formats. MongoDB's schema-less nature allows for easy adaptation to changes in article structure and supports efficient querying for large volumes of news data.
+- **Relational Database (e.g., MySQL)**: Used for News sources and user table.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Why MongoDB for Articles?**
 
-## Laravel Sponsors
+Articles from different news sources often have inconsistent fields and metadata. MongoDB allows the application to store each article as a document, accommodating variations without requiring schema migrations. This flexibility, combined with high performance for read-heavy workloads, makes MongoDB a natural fit for storing and retrieving news articles efficiently.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Console Commands
 
-### Premium Partners
+### Fetching News Articles
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+The application provides console commands to fetch articles from configured news sources. These commands use service implementations to interact with external APIs and store articles in the database.
 
-## Contributing
+#### Basic Usage
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# Fetch articles from all active news sources
+php artisan news:fetch
 
-## Code of Conduct
+# Fetch articles from a specific source
+php artisan news:fetch --source=newsapi
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Dry run (show what would be fetched without storing)
+php artisan news:fetch --dry-run
 
-## Security Vulnerabilities
+# Verbose output (show detailed information)
+php artisan news:fetch --verbose
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Combine options
+php artisan news:fetch --source=guardian --dry-run --verbose
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Scheduled Execution
+
+The `news:fetch` command is scheduled to run automatically at specific intervals to ensure timely aggregation of news articles:
+
+- **NewsAPI**: Runs every 5 minutes
+- **The Guardian**: Runs every 10 minutes
+- **NYTimes**: Runs every 15 minutes
+
+This scheduling is configured in the application's [bootstrap/app.php](src/bootstrap/app.php) file using Laravel's task scheduling feature. Logs for each execution are appended to `storage/logs/news-fetch.log`.
+
+#### Example Scheduling Configuration
+
+```php
+$schedule->command('news:fetch --source=newsapi')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/news-fetch.log'));
+
+$schedule->command('news:fetch --source=guardian')
+    ->everyTenMinutes()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/news-fetch.log'));
+
+$schedule->command('news:fetch --source=nytimes')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/news-fetch.log'));
